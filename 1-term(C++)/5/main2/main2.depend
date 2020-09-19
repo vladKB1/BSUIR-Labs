@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1572728794 source:c:\users\vlad\desktop\university\oaip\labs\1 semester\5\main2\calc.cpp
+	"main2.h"
+
+1572722772 c:\users\vlad\desktop\university\oaip\labs\1 semester\5\main2\main2.h
+
+1572729112 source:c:\users\vlad\desktop\university\oaip\labs\1 semester\5\main2\main.cpp
+	<bits/stdc++.h>
+	"main2.h"
+

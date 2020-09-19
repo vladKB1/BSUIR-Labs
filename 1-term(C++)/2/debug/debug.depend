@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1568223566 source:c:\users\vlad\desktop\university\oaip\labs\1 semester\2\debug\main.cpp
+	<iostream>
+	<math.h>
+	<windows.h>
+

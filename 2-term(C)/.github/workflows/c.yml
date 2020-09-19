@@ -1,0 +1,17 @@
+name: C CI
+
+on: push
+
+jobs:
+  build_and_run:
+    name: Start
+
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: 5th_lab
+        run: make 5th_lab
+      - name: 6th_lab
+        run: make 6th_lab
+ 

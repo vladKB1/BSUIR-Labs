@@ -1,0 +1,5 @@
+EXPORTS
+    add = add@8 @1
+    add@8 @2
+    take = take@4 @3
+    take@4 @4
