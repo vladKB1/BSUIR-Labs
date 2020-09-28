@@ -36,7 +36,6 @@ int main() {
         int a, b;
         cin >> a >> b;
         ss[a].push_back(b);
-        ss[b].push_back(a);
     }
 
     for (int i = 1; i <= n; i++) if (!f[i]) {
