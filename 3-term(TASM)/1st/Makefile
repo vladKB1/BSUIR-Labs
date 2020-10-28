@@ -35,8 +35,8 @@ $(call CMD, "del $(1)")
 all: build execute
 
 init:
-	mkdir -p debug
-	mkdir -p dist
+	mkdir debug
+	mkdir dist
 	
 build:
 	$(DOSBOX_EXECUTOR) \
@@ -55,7 +55,6 @@ execute:
 	$(call CMD,"$(DISK_EXECUTABLE_NAME):") \
 	$(call CMD,"cls") \
 	$(call CMD,"$(DIST_FOLDER)\$(EXECUTABLE)") \
-	# $(call CMD,"exit")
 	
 deb: build
 	$(DOSBOX_EXECUTOR) \
