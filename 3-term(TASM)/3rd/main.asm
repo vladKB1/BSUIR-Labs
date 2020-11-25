@@ -92,9 +92,9 @@ readToAX proc
 		cmp len, 0
 		je firstSymb
 	
-	
-		noLeadZero:
 		
+		noSign:
+
 		sub al, '0'
 		cmp al, 9
 		ja whileNotEnter	
@@ -130,10 +130,7 @@ readToAX proc
 			cmp al, '-'
 			je minus
 
-			cmp al, '0'
-			je whileNotEnter			
-
-			jmp noLeadZero
+			jmp noSign
 
 
 		minus:			
