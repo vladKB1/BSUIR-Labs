@@ -20,7 +20,9 @@ printAX proc
 	push cx
 	push dx
 	
+
 	xor cx, cx	
+
 
 	putToStack:
 		xor dx, dx
@@ -31,6 +33,7 @@ printAX proc
 		cmp ax, 0
 		ja putToStack
 	
+
 	xor dx, dx
 	printChar:	
 		pop ax		
@@ -39,6 +42,7 @@ printAX proc
 		int 21h
 		loop printChar	
 		
+
 	pop dx
 	pop cx	
 
@@ -50,8 +54,10 @@ readToAX proc
 	push cx
 	push dx
 
+
 	mov len, 0
 	xor bx, bx
+
 
 	whileNotEnter:		
 		mov ah, 08h
@@ -65,13 +71,7 @@ readToAX proc
 
 		cmp al, esc
 		je escape
-
-		cmp len, 0
-		je leadZero
-	
-
-	
-		noLeadZero:
+			
 				
 		sub al, '0'
 		cmp al, 9
@@ -92,6 +92,7 @@ readToAX proc
 		mov bx, ax
 		inc len
 
+
 		add cl, '0'
 		mov dl, cl
 		mov ah, 02h
@@ -99,42 +100,33 @@ readToAX proc
 
 		jmp whileNotEnter
 
-		backSpace:
-			call delFromScreen
-			
-			xor dx, dx
-			mov ax, bx
-			div ten
-			mov bx, ax
 
+		backSpace:
+			cmp len, 0
+			je whileNotEnter
+			
+			dec len
+			call delFromScreen			
 			jmp whileNotEnter
 
+
 		escape:	
-			call delFromScreen
-
-			xor dx, dx
-			mov ax, bx
-			div ten
-			mov bx, ax
-
 			cmp len, 0
-			ja escape
-
-			jmp whileNotEnter	
-
-		leadZero:
-			cmp al, '0'
 			je whileNotEnter
 
-			jmp noleadzero
-
-	findEnter:		
-		mov dl, new_line
-		mov ah, 02h
-		int 21h
-
-		mov ax, bx 
+			dec len
+			call delFromScreen
+			jmp escape	
 		
+
+		findEnter:		
+			mov dl, new_line
+			mov ah, 02h
+			int 21h
+
+			mov ax, bx 
+
+
 	pop dx
 	pop cx
 	pop bx
@@ -145,10 +137,8 @@ readToAX endp
 delFromScreen proc
 	push ax
 	push dx
+	
 
-	cmp len, 0
-	je lenNull
-		
 	mov ah, 02h	
 	mov dl, bcksp
 	int 21h
@@ -159,9 +149,11 @@ delFromScreen proc
 	mov dl, bcksp
 	int 21h
 
-	dec len
-	
-	lenNull:		
+	xor dx, dx
+	mov ax, bx
+	div ten
+	mov bx, ax
+
 
 	pop dx
 	pop ax
@@ -188,11 +180,11 @@ main:
 	cmp ax, 0
 	je nullNumber
 
-
 	
 	xor ax, bx
 	xor bx, ax
 	xor ax, bx
+
 
 	xor dx, dx
 	div bx
@@ -225,12 +217,14 @@ main:
 
 	jmp endd
 
+
 	nullNumber:
 		lea dx, msg_divide_by_zero
 		mov ah, 09h
 		int 21h
 		jmp endd
 	
+
 	endd:
 		mov ah, 4ch
 		int 21h
