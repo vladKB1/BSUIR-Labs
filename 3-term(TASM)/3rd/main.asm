@@ -1,5 +1,5 @@
 model small
-.stack 200h
+.stack 100h
 .data
 	ten dw 10
 	entr db 13
@@ -19,6 +19,7 @@ model small
 
 	uncontrollableAns db "32768$"
 .code
+.386
 
 printAX proc
 	push cx
@@ -83,7 +84,10 @@ readToAX proc
 		je findEnter
 				
 		cmp al, bcksp
-		je backSpace				
+		je backSpace
+
+		cmp al, esc
+		je escape				
 
 		cmp len, 0
 		je firstSymb
@@ -143,8 +147,8 @@ readToAX proc
 			int 21h
 
 			jmp whileNotEnter					
-
-
+			
+		
 		delMinus:
 			cmp isMinus, 0
 			je whileNotEnter
@@ -158,9 +162,19 @@ readToAX proc
 			cmp len, 0
 			je delMinus
 			
+			dec len
 			call delFromScreen			
 			jmp whileNotEnter									
 	
+
+		escape:
+			cmp len, 0
+			je delMinus
+
+			dec len
+			call delFromScreen
+			jmp escape			
+
 
 		findEnter:		
 			mov dl, new_line
@@ -203,16 +217,11 @@ delFromScreen proc
 	div ten
 	mov bx, ax
 
-	cmp len, 0
-	je delEnd
 
-	dec len
+	pop dx
+	pop ax
 
-	delEnd:
-		pop dx
-		pop ax
-
-		ret
+	ret
 delFromScreen endp
 
 main:
