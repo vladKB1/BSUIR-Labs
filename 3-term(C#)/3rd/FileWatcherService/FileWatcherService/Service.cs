@@ -1,0 +1,43 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Linq;
+using System.ServiceProcess;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace FileWatcherService
+{
+    public partial class Service : ServiceBase
+    {
+        Watcher watcher;        
+
+        public Service()
+        {
+            InitializeComponent();
+            this.CanStop = true;
+            this.CanPauseAndContinue = true;
+            this.AutoLog = true;
+        }
+
+        protected override void OnStart(string[] args)
+        {
+            watcher = new Watcher();
+            Thread watcherThread = new Thread(new ThreadStart(watcher.Start));
+            watcherThread.Start();
+
+            Logger.Log("FileWatcherService started to work.");
+        }
+
+        protected override void OnStop()
+        {
+            watcher.Stop();
+            Thread.Sleep(1000);
+
+            Logger.Log("FileWatcherService stopped.");
+        }
+    }
+}
