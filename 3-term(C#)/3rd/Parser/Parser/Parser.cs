@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.IO.Compression;
 
 namespace Parser
 {
@@ -18,7 +19,7 @@ namespace Parser
 
         public static T DeserializeXML<T>(string XML) where T : new()
         {
-            List<string> list = JsonParse(XML);
+            List<string> list = XMLParse(XML, true);
             return Deserialize<T>(list);
         }
 
@@ -43,9 +44,9 @@ namespace Parser
                     key = match.Groups[1].Value;
                     value = match.Groups[2].Value;
 
-                    FieldInfo info = type.GetField(key);
-                    info.SetValue(ans, typeof(Parser).GetMethod("Deserialize")
-                        .MakeGenericMethod(new Type[] { info.FieldType }) .Invoke(null, new object[] { value }));
+                    PropertyInfo info = type.GetProperty(key);
+                    info.SetValue(ans, typeof(Parser).GetMethod("DeserializeJson")
+                        .MakeGenericMethod(new Type[] { info.PropertyType }).Invoke(null, new object[] { value }));
                 }
                 else if (simple.IsMatch(option))
                 {
@@ -54,8 +55,17 @@ namespace Parser
                     key = match.Groups[1].Value;
                     value = match.Groups[2].Value;
 
-                    FieldInfo info = type.GetField(key);
-                    info.SetValue(ans, Convert.ChangeType(value, info.FieldType));
+
+                    PropertyInfo info = type.GetProperty(key);
+
+                    if (info.PropertyType.IsEnum) 
+                    {
+                        info.SetValue(ans, Enum.Parse(info.PropertyType, value));
+                    }
+                    else
+                    {
+                        info.SetValue(ans, Convert.ChangeType(value, info.PropertyType));
+                    }                    
                 }
             }
             return ans;
@@ -99,72 +109,139 @@ namespace Parser
             return list;
         }
 
-        public static List<string> XMLParse(string xml, bool trim)
+
+        static List<string> XMLParse(string xml, bool trim)
         {
             xml = xml.Trim(new char[] { '\n', '\t', '\r', ' ' });
+            List<string> objects = new List<string>();           
             string tagName;
             Match match;
-            tagName = GetNextTag(xml, 0);
 
-            if (trim)
+            try
             {
-                Regex trimming = new Regex($"^<{tagName}>(.*)</{tagName}>$", RegexOptions.Singleline);
-                match = trimming.Match(xml);
-                if (match.Success)
+                tagName = GetNextTag(xml, 0);
+                if (trim)
                 {
-                    xml = match.Groups[1].Value;
+                    Regex trimming = new Regex($"^<{tagName}>(.*)</{tagName}>$", RegexOptions.Singleline);
+                    match = trimming.Match(xml);
+                    if (match.Success)
+                    {
+                        xml = match.Groups[1].Value;
+                    }
                 }
             }
-
-            List<string> list = new List<string>();
-            bool isTag = false;
-            StringBuilder option = new StringBuilder();
-            string tag = "", value = "";
-            int tagNum = 0;
-
-            foreach (char symbol in xml)
+            catch
             {
-                if (symbol != '\t' && symbol != '\r' && symbol != '\n')
+                return new List<string>() { xml };                    
+            }
+
+            Regex Tag = new Regex(@"<(/?.*)>");
+
+            string mainTag = "", tag = "";
+            int deep = 0;
+            bool isMainTag = true, isValue = false;
+            string value = "";
+            bool quotes = false;
+
+            foreach (char c in xml)
+            {
+                if ((c != '\t' && c != '\r' && c != '\n') || quotes)
                 {
-                    if (symbol == '<')
+                    if (c == '\"')
                     {
-                        isTag = true;
-                        tagNum++;
+                        quotes = !quotes;
+                    }
+                    if (quotes)
+                    {
+                        value += c;
                         continue;
                     }
-                    if (symbol == '>')
+                    if (c == '<')
                     {
-                        isTag = false;
-                        if (tagNum == 2)
+                        isValue = false;
+                        if (!isMainTag)
                         {
-                            tag = tag.Remove(tag.IndexOf('/'), tag.Length - tag.IndexOf('/'));
-                            option.Append(tag + ':' + value);
-                            tagNum = 0;
-                            tag = "";
-                            value = "";
-                            list.Add(option.ToString());
-                            option.Clear();
+                            tag += c;
                         }
-                        continue;
                     }
-                    if (isTag)
+                    else if (c == '>')
                     {
-                        tag += symbol;
+                        if (isMainTag)
+                        {
+                            isMainTag = false;
+                            isValue = true;
+                            deep++;
+                        }
+                        else
+                        {
+                            tag += c;
+                            match = Tag.Match(tag);
+
+                            if (match.Success)
+                            {
+                                tagName = match.Groups[1].Value;
+                                if (tagName[0] == '/')
+                                {
+                                    if ('/' + mainTag == tagName && deep == 1)
+                                    {                                                                      
+                                        mainTag = "";
+                                        tag = "";
+                                        isMainTag = true;
+                                        isValue = false;
+                                        value = "";
+                                    }
+                                    else
+                                    {
+                                        value += tag;
+                                        tag = "";
+                                        isValue = true;
+                                    }
+                                    deep--;
+                                }
+                                else
+                                {
+                                    deep++;
+                                    isValue = true;
+                                    value += tag;
+                                    tag = "";
+                                }
+                            }
+                            else
+                            {
+                                throw new Exception("XML File is damaged.");
+                            }
+                        }
                     }
                     else
                     {
-                        value += symbol;
+                        if (isValue)
+                        {
+                            value += c;
+                        }
+                        else if (isMainTag)
+                        {
+                            mainTag += c;
+                        }
+                        else
+                        {
+                            tag += c;
+                        }
                     }
                 }
             }
-            return list;
+
+            if (mainTag != "")
+            {
+                return new List<string>() { mainTag };
+            }
+
+            return objects;
         }
 
         static string GetNextTag(string xml, int startIndex)
         {
             StringBuilder tag = new StringBuilder("");
             bool isTag = false;
-
             for (int i = startIndex; i < xml.Length; i++)
             {
                 if (xml[i] == '<')
@@ -181,8 +258,7 @@ namespace Parser
                     tag.Append(xml[i]);
                 }
             }
-
-            throw new Exception("Tag wasn't found.");
-        }
+            throw new Exception("Matching tag wasn't found.");
+        }       
     }
 }
