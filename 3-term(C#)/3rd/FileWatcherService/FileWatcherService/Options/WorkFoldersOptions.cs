@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FileWatcherService.Options
 {
-    public class WorkFoldersOptions
+    public class WorkFoldersOptions : Options
     {
         public string SourceDir { get; set; } = @"C:\Projects\FileWatcherService\source";
         public string TargetDir { get; set; } = @"C:\Projects\FileWatcherService\target";
