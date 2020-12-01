@@ -35,7 +35,7 @@
   <ItemGroup>
     <Reference Include="Parser, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Parser\Parser\bin\Debug\netcoreapp3.1\Parser.dll</HintPath>
+      <HintPath>..\..\Parser\Parser\bin\Debug\Parser.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
@@ -88,6 +88,5 @@
       <DependentUpon>Service.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

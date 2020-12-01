@@ -14,13 +14,15 @@ namespace FileWatcherService
         public static LoggerOptions loggerOptions = new LoggerOptions();
         static string preLog = "";
 
+        public static bool loaded = false;
+
 
         public static void Log(string msg)
         {           
 
-            if (loggerOptions == null)
+            if (!loaded)
             {
-                preLog += $"[{DateTime.Now:hh:mm:ss dd.MM.yyyy}] - {msg}";
+                preLog += $"[{DateTime.Now:hh:mm:ss dd.MM.yyyy}] - {msg}\n";
                 return;
             }            
 
@@ -49,7 +51,7 @@ namespace FileWatcherService
                 {
                     using (StreamWriter sw = new StreamWriter(loggerOptions.LogFile, true))
                     {
-                        sw.WriteLine($"{preLog}");
+                        sw.Write($"{preLog}");
                     }
                     preLog = "";
                 }

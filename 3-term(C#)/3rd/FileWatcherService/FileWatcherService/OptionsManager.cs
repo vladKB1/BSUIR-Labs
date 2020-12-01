@@ -61,7 +61,7 @@ namespace FileWatcherService
             {
                 defaultOptions = new ETLOptions();
                 Logger.Log("Default options is used.");
-            }         
+            }                        
         }
 
         Options.Options FindOption<T>(ETLOptions options)
@@ -86,14 +86,19 @@ namespace FileWatcherService
         {
             if (isJsonConfigured)
             {
+                Logger.Log("Json configuration will be used.");
                 return FindOption<T>(jsonOptions);
             }
             else if (isXmlConfigured)
             {
+                Logger.Log("Json configuration is invalid or out.");
+                Logger.Log("XML configuration will be used.");
                 return FindOption<T>(xmlOptions);
             }
             else
             {
+                Logger.Log("XML configuration is invalid or out.");
+                Logger.Log("Default configuration will be used.");
                 return FindOption<T>(defaultOptions);
             }
         }

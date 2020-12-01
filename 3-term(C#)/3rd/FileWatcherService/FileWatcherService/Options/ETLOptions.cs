@@ -24,7 +24,7 @@ namespace FileWatcherService.Options
             WorkFoldersOptions = workFoldersOptions;
             LoggerOptions = loggerOptions;
             ArchivationOptions = archivationOptions;
-            EncryptionOptions = encryptionOptions;
+            EncryptionOptions = encryptionOptions;   
             Validation.Validate(this);
         }
     }

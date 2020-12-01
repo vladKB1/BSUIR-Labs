@@ -32,6 +32,7 @@ namespace FileWatcherService
             target = options.WorkFoldersOptions.TargetDir;
             saveArchive = options.ArchivationOptions.ArchiveDir;
             Logger.loggerOptions = options.LoggerOptions;
+            Logger.loaded = true;
 
             watcher = new FileSystemWatcher(source);
             watcher.Created += Created;
