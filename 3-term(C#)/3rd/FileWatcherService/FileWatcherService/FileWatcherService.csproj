@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Parser, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Parser\Parser\bin\Debug\netcoreapp3.1\Parser.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
@@ -48,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Archivation.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Encryption.cs" />
     <Compile Include="Installer.cs">
       <SubType>Component</SubType>
@@ -55,6 +60,16 @@
     <Compile Include="Installer.Designer.cs">
       <DependentUpon>Installer.cs</DependentUpon>
     </Compile>
+    <Compile Include="OptionsManager.cs" />
+    <Compile Include="Options\ArchivationOptions.cs" />
+    <Compile Include="Options\EncryptionOptions.cs" />
+    <Compile Include="Options\ETLJsonOptions.cs" />
+    <Compile Include="Options\ETLOptions.cs" />
+    <Compile Include="Options\ETLXmlOptions.cs" />
+    <Compile Include="Options\LoggerOptions.cs" />
+    <Compile Include="Options\Options.cs" />
+    <Compile Include="Options\WorkFoldersOptions.cs" />
+    <Compile Include="Validation.cs" />
     <Compile Include="Watcher.cs" />
     <Compile Include="Service.cs">
       <SubType>Component</SubType>
@@ -73,5 +88,6 @@
       <DependentUpon>Service.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

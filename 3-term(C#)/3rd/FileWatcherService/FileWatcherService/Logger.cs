@@ -11,10 +11,19 @@ namespace FileWatcherService
 {
     static class Logger
     {
-        public static LoggerOptions loggerOptions;
+        public static LoggerOptions loggerOptions = new LoggerOptions();
+        static string preLog = "";
+
 
         public static void Log(string msg)
-        {               
+        {           
+
+            if (loggerOptions == null)
+            {
+                preLog += $"[{DateTime.Now:hh:mm:ss dd.MM.yyyy}] - {msg}";
+                return;
+            }            
+
             if (loggerOptions.NeedToLog)
             {
                 string logDir = Path.GetDirectoryName(loggerOptions.LogFile);
@@ -36,6 +45,14 @@ namespace FileWatcherService
                     return;
                 }
 
+                if (preLog != "")
+                {
+                    using (StreamWriter sw = new StreamWriter(loggerOptions.LogFile, true))
+                    {
+                        sw.WriteLine($"{preLog}");
+                    }
+                    preLog = "";
+                }
 
                 using (StreamWriter sw = new StreamWriter(loggerOptions.LogFile, true))
                 {

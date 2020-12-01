@@ -11,12 +11,12 @@ namespace FileWatcherService.Options
         public ETLJsonOptions(string json) : base()
         {
             ETLOptions options = Parser.Parser.DeserializeJson<ETLOptions>(json);
-            WorkFoldersOptions = options.workFoldersOptions;
-            LoggerOptions = options.loggerOptions;
-            ArchivationOptions = options.archivationOptions;
-            EncryptionOptions = options.encryptionOptions;
+            WorkFoldersOptions = options.WorkFoldersOptions;
+            LoggerOptions = options.LoggerOptions;
+            ArchivationOptions = options.ArchivationOptions;
+            EncryptionOptions = options.EncryptionOptions;
 
-            Validation.Validate(this);
+            Validation.Validate(this);            
         }
     }
 }

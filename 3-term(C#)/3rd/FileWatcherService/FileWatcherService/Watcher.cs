@@ -23,7 +23,7 @@ namespace FileWatcherService
         
 
         public Watcher()
-        {
+        {             
             string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
             optionsManager = new OptionsManager(appDirectory);
             ETLOptions options = optionsManager.GetOptions<ETLOptions>() as ETLOptions;

@@ -14,9 +14,10 @@ namespace FileWatcherService
         ETLOptions defaultOptions;
         ETLJsonOptions jsonOptions;
         ETLXmlOptions xmlOptions;
+        
 
-        bool isJsonConfigured;
-        bool isXmlConfigured;
+        bool isJsonConfigured = false;
+        bool isXmlConfigured = false;
 
         public OptionsManager(string path)
         {
@@ -28,14 +29,15 @@ namespace FileWatcherService
                 {
                     options = sr.ReadToEnd();
                 }
-
+                
                 jsonOptions = new ETLJsonOptions(options);
                 isJsonConfigured = true;
-                Logger.Log("appsettings.json is configured."); 
+                Logger.Log("appsettings.json is loaded."); 
             }
-            catch
+            catch (Exception ex)
             {
                 isJsonConfigured = false;
+                Logger.Log(ex.Message);
             }
 
             try
@@ -47,7 +49,7 @@ namespace FileWatcherService
 
                 xmlOptions = new ETLXmlOptions(options);
                 isXmlConfigured = true;
-                Logger.Log("config.xml is configured.");
+                Logger.Log("config.xml is loaded.");
             }
             catch
             {
@@ -74,7 +76,7 @@ namespace FileWatcherService
             }
             catch
             {
-                Logger.Log("FindOption didn't find the needed option and throw a NotImplementedException."); //
+                Logger.Log("FindOption didn't find the needed option and throw a NotImplementedException."); 
                 throw new NotImplementedException();
             }
         }

@@ -8,13 +8,14 @@ namespace FileWatcherService.Options
 {
     public class ETLOptions : Options
     {
-        public WorkFoldersOptions WorkFoldersOptions { get; set; }
-        public LoggerOptions LoggerOptions { get; set; }
-        public ArchivationOptions ArchivationOptions { get; set; }
-        public EncryptionOptions EncryptionOptions { get; set; }
+        public WorkFoldersOptions WorkFoldersOptions { get; set; } = new WorkFoldersOptions();
+        public LoggerOptions LoggerOptions { get; set; } = new LoggerOptions();
+        public ArchivationOptions ArchivationOptions { get; set; } = new ArchivationOptions();
+        public EncryptionOptions EncryptionOptions { get; set; } = new EncryptionOptions();
 
         public ETLOptions()
         {
+            Validation.Validate(this);
         }
 
         public ETLOptions(WorkFoldersOptions workFoldersOptions, LoggerOptions loggerOptions,
@@ -24,6 +25,7 @@ namespace FileWatcherService.Options
             LoggerOptions = loggerOptions;
             ArchivationOptions = archivationOptions;
             EncryptionOptions = encryptionOptions;
+            Validation.Validate(this);
         }
     }
 }

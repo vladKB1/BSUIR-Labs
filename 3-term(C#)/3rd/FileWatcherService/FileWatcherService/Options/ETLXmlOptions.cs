@@ -10,13 +10,13 @@ namespace FileWatcherService.Options
     {
         public ETLXmlOptions(string xml) : base()
         {
-            ETLOptions options = Parser.Parser.DeserializeXML<ETLOptions>(json);
-            WorkFoldersOptions = options.workFoldersOptions;
-            LoggerOptions = options.loggerOptions;
-            ArchivationOptions = options.archivationOptions;
-            EncryptionOptions = options.encryptionOptions;
-
-            Validation.Validate(this);
+             ETLOptions options = Parser.Parser.DeserializeXML<ETLOptions>(xml);
+             WorkFoldersOptions = options.WorkFoldersOptions;
+             LoggerOptions = options.LoggerOptions;
+             ArchivationOptions = options.ArchivationOptions;
+             EncryptionOptions = options.EncryptionOptions;
+             
+            Validation.Validate(this);                     
         }
     }
 }
