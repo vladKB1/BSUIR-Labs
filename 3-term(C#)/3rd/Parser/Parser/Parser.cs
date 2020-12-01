@@ -58,14 +58,14 @@ namespace Parser
 
                     PropertyInfo info = type.GetProperty(key);
 
-                    if (info.PropertyType.IsEnum) 
+                    if (info.PropertyType.IsEnum)
                     {
                         info.SetValue(ans, Enum.Parse(info.PropertyType, value));
                     }
                     else
                     {
                         info.SetValue(ans, Convert.ChangeType(value, info.PropertyType));
-                    }                    
+                    }
                 }
             }
             return ans;
@@ -113,7 +113,7 @@ namespace Parser
         static List<string> XMLParse(string xml, bool trim)
         {
             xml = xml.Trim(new char[] { '\n', '\t', '\r', ' ' });
-            List<string> objects = new List<string>();           
+            List<string> objects = new List<string>();
             string tagName;
             Match match;
 
@@ -132,7 +132,7 @@ namespace Parser
             }
             catch
             {
-                return new List<string>() { xml };                    
+                return new List<string>() { xml };
             }
 
             Regex Tag = new Regex(@"<(/?.*)>");
@@ -183,7 +183,7 @@ namespace Parser
                                 if (tagName[0] == '/')
                                 {
                                     if ('/' + mainTag == tagName && deep == 1)
-                                    {                                                                      
+                                    {
                                         mainTag = "";
                                         tag = "";
                                         isMainTag = true;
@@ -259,6 +259,6 @@ namespace Parser
                 }
             }
             throw new Exception("Matching tag wasn't found.");
-        }       
+        }
     }
 }
