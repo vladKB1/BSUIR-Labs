@@ -51,9 +51,10 @@ namespace FileWatcherService
                 isXmlConfigured = true;
                 Logger.Log("config.xml is loaded.");
             }
-            catch
+            catch (Exception ex)
             {
                 isXmlConfigured = false;
+                Logger.Log(ex.Message);
             }
 
             if (!isJsonConfigured && !isXmlConfigured)
