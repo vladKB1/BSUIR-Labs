@@ -3,6 +3,8 @@ model small
 .data
 	
 .code
+.386
+
 main:
 	mov ax, @data
  	mov ds, ax
