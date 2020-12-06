@@ -1,24 +1,8 @@
 Turbo Assembler  Version 4.0  Copyright (c) 1988, 1993 Borland International
 
 Assembling file:   MAIN.ASM
-**Error** MAIN.ASM(64) Operand types do not match
-**Error** MAIN.ASM(65) Operand types do not match
-**Error** MAIN.ASM(69) Operand types do not match
-**Error** MAIN.ASM(72) Operand types do not match
-**Error** MAIN.ASM(77) Operand types do not match
-**Error** MAIN.ASM(81) Operand types do not match
-**Error** MAIN.ASM(84) Operand types do not match
-**Error** MAIN.ASM(85) Undefined symbol: WHILLE1
-**Error** MAIN.ASM(90) Operand types do not match
-**Error** MAIN.ASM(100) Operand types do not match
-**Error** MAIN.ASM(148) Undefined symbol: TEN
-*Warning* MAIN.ASM(148) Argument needs type override
-**Error** MAIN.ASM(179) Operand types do not match
-**Error** MAIN.ASM(180) Operand types do not match
-**Error** MAIN.ASM(193) Operand types do not match
-**Error** MAIN.ASM(199) Operand types do not match
-Error messages:    15
-Warning messages:  1
+Error messages:    None
+Warning messages:  None
 Passes:            1
 Remaining memory:  467k
 

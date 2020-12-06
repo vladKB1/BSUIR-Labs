@@ -2,15 +2,14 @@ model small
 .stack 100h
 .data
 	ten dw 10
+	len dw 0
+	mx dw 0
+	mxlen dw 0
+	l dw 0
+	r dw 0
 
-	len db 0
-	mx db 0
-	mxlen db 0
-	l db 0
-	r db 0
-
-	string db 100 dup('$')
-	zFunc db 100 dup(0)
+	string dw 100 dup('$')
+	zFunc dw 100 dup(0)
 .code
 .386
 
@@ -29,9 +28,6 @@ readString proc
 
 		cmp al, 13
 		je readStringEnd
-
-		cmp al, 10
-		je readStringEnd
 		
 		inc len
 		stosb
@@ -47,93 +43,94 @@ readString proc
 readString endp
 
 calcZetFunction proc
-	push ax	
+	push ax
+	push bx
 	push cx
 	push si
 	push di
 
-	xor ax, ax
-	mov cx, 1	
-	lea si, zFunc
-	inc si	
+
+	lea si, zFunc	
+	lea di, string
+	mov bx, 1
 
 	for1:
-		cmp cl, len
+		cmp bx, len
 		jae calcEnd
 
-		cmp cl, r
+		cmp bx, r
 		ja while1
 		
-		mov al, [si-1]
-		mov [si], al
-
-		mov al, r
-		sub al, cl
-		inc al
-		cmp al, [si]
+		mov ax, zFunc[bx]
+		mov zFunc[bx], ax
+		mov ax, r
+		sub ax, bx
+		inc ax
+		cmp ax, zFunc[bx]
 		ja while1
 
-		mov [si], al
+		mov zFunc[bx], ax
 
 		
 		while1:
-			mov al, cl
-			add al, [si]
-			cmp al, len
+			mov ax, bx
+			add ax, zFunc[bx]
+			cmp ax, len
 			jae afterWhile1
 
-			push si						
-			mov al, [si]
-			
-			lea si, string
-			add si, ax 
+			push bx
+			add bx, zFunc[bx]			
+			mov cx, string[bx]
+			pop bx
 
-			lea di, string
-			add di, ax
-			add di, cx			
-
-			cmpsb	
-			pop si
-
+			push bx
+			mov bx, zFunc[bx]
+			cmp string[bx], cx
 			jne afterWhile1
 
-			mov al, [si]	
-			inc al
-			mov [si], al			
+			inc zFunc[bx]		
 			jmp while1
 
 
 		afterWhile1:
-		mov al, cl
-		add al, [si]
-		dec al
-		cmp r, al
+		mov ax, bx
+		add ax, zFunc[bx]
+		dec ax
+		cmp r, ax
 		jae findAns
 
-		mov l, cl
-		mov r, al
+		mov l, bx
+		mov r, ax
 
 
 		findAns:
-		mov al, [si]
-		cmp mx, al
+		mov ax, zFunc[bx]
+		cmp mx, ax
 		jae nextStep
 
-		mov mx, al
-		mov mxlen, cl
+		mov mx, ax
+		mov mxlen, bx
 		inc mxlen
 		
 
 		nextStep:	
-		inc si
-		inc cx
+		push ax	
+		mov ax, zFunc[bx]
+		call printAX
+		mov dl, ' '
+		mov ah, 02h
+		int 21h
+		pop ax	
+
+		inc bx
 		jmp for1
 	
 
 	calcEnd:
 	pop di
 	pop si	
-	pop cx	
+	pop cx
+	pop bx
 	pop ax
 
 	ret
@@ -180,30 +177,27 @@ main:
  	call readString
 	call calcZetFunction
 	
-	xor ax, ax
-	mov al, len
-	mov bl, mxlen
-	dec bl	
-	div bl
+	mov ax, len
+	mov bx, mxlen
+	dec bx
+	div bx
 
 	cmp ah, 0
 	jne noPeriod
 	
-	mov al, mxlen
-	add al, mx
-	dec al
-	cmp al, len
+	mov ax, mxlen
+	add ax, mx
+	dec ax
+	cmp ax, len
 	jne noPeriod
 
-	xor ax, ax
-	mov al, mxlen
-	dec al 
+	mov ax, mxlen
+	dec ax
 	call printAX
 	jmp exit
 
 	noPeriod:
-	xor ax, ax
-	mov al, len
+	mov ax, len
 	call printAX
 
 	exit:
