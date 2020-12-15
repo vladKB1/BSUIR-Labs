@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FileManager.Options;
 using FileManager.Processing;
 
+
 namespace FileManager
 {
     class FileManager
@@ -37,8 +38,8 @@ namespace FileManager
             target = options.WorkFoldersOptions.TargetDir;
             saveArchive = options.ArchivationOptions.ArchiveDir;
 
-            logger = new Logger.Logger(optionsManager.GetOptions<Logger.LoggerOptions>()
-                 as Logger.LoggerOptions);
+            logger = new Logger.Logger(optionsManager.GetOptions<LoggerOptions>() as LoggerOptions);
+            logger.Log(validator.LogString);
             logger.Log(optionsManager.LogString);
 
             watcher = new FileSystemWatcher(source);

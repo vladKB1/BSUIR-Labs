@@ -9,7 +9,7 @@ namespace FileManager.Options
     public class ETLOptions : Options
     {
         public WorkFoldersOptions WorkFoldersOptions { get; set; } = new WorkFoldersOptions();
-        public Logger.LoggerOptions LoggerOptions { get; set; } = new Logger.LoggerOptions();
+        public LoggerOptions LoggerOptions { get; set; } = new LoggerOptions();
         public ArchivationOptions ArchivationOptions { get; set; } = new ArchivationOptions();
         public EncryptionOptions EncryptionOptions { get; set; } = new EncryptionOptions();
 

@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Logger">
-      <HintPath>..\Logger\bin\Debug\Logger.exe</HintPath>
-    </Reference>
     <Reference Include="OptionsManager">
       <HintPath>..\OptionsManager\bin\Debug\OptionsManager.exe</HintPath>
     </Reference>
@@ -55,9 +52,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Logger\Logger.cs" />
     <Compile Include="Options\ArchivationOptions.cs" />
     <Compile Include="Options\EncryptionOptions.cs" />
     <Compile Include="Options\ETLOptions.cs" />
+    <Compile Include="Options\LoggerOptions.cs" />
     <Compile Include="Options\Options.cs" />
     <Compile Include="Options\Validator.cs" />
     <Compile Include="Options\WorkFoldersOptions.cs" />
