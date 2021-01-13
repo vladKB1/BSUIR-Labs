@@ -8,6 +8,8 @@ model small
 
 	old_int09h dd 0
 
+	capsLockFlag db 0
+	shiftFlag db 0
 	exitFlag db 0
 
 	;msg_lenKeyW_is_null db "The length of key word is 0.$"
@@ -48,6 +50,21 @@ newHandler proc
 	cmp al, 1
 	je setExitFlag
 
+	cmp al, 58
+	je capsLock
+	cmp al, 186
+	je unCapsLock
+
+	cmp al, 42
+	je shift
+	cmp al, 170 ;+80h=128
+	je unShift
+
+	cmp al, 54
+	je shift
+	cmp al, 180
+	je unShift
+
 
 	xor si, si
 	for1:
@@ -64,10 +81,38 @@ newHandler proc
 	mov exitFlag, 1
 	jmp endd
 
+	capsLock:
+	mov capsLockFlag, 1
+	jmp endd
+
+	unCapsLock:
+	mov capsLockFlag, 0
+	jmp endd
+
+	shift:
+	mov shiftFlag, 1
+	jmp endd
+
+	unShift:
+	mov shiftFlag, 0
+	jmp endd
+
 
 	letter:
-	mov ah, 02h
 	mov dl, letterCode[si]
+
+	mov cl, shiftFlag
+	add cl, capsLockFlag
+	and cl, 1
+
+	cmp cl, 0
+	je printLetter
+
+	upperCase:
+	sub dl, 32
+
+	printLetter:
+	mov ah, 02h
 	int 21h
 
 
@@ -78,6 +123,7 @@ newHandler proc
 
 	pop si es ds
 	popa
+
 	sti
 	iret
 newHandler endp
