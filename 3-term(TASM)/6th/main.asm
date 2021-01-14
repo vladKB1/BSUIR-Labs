@@ -5,12 +5,14 @@ model small
 	;keyWord db 26 dup('$')
 	;lenKeyW db 0
 	letterCode db "nebulascdfghijkmopqrtvwxyz"
+	lastButton db 0
 
 	old_int09h dd 0
 
+
+	intStatus db 0
 	capsLockFlag db 0
 	shiftFlag db 0
-	exitFlag db 0
 
 	;msg_lenKeyW_is_null db "The length of key word is 0.$"
 	;msg_lenKeyW_is_big db "The length of key word is more than 26.$"
@@ -47,9 +49,6 @@ newHandler proc
 	xor ax, ax
 	in al, 60h	
 
-	cmp al, 1
-	je setExitFlag
-
 	cmp al, 58
 	je capsLock
 	cmp al, 186
@@ -76,10 +75,6 @@ newHandler proc
 		je endd
 	jmp for1
 
-
-	setExitFlag:
-	mov exitFlag, 1
-	jmp endd
 
 	capsLock:
 	mov capsLockFlag, 1
@@ -114,7 +109,7 @@ newHandler proc
 	printLetter:
 	mov ah, 02h
 	int 21h
-
+	mov lastButton, dl
 
 	endd:
 	xor ax, ax
@@ -145,37 +140,53 @@ main:
 	mov ax, @data
  	mov ds, ax
 
- 	;call getArgument
-
-	call setNewHandler 
+ 	;call getArgument	
 
 	while1:	
-		cmp exitFlag, 1
-	jne while1
+		cmp intStatus, 1
+		je checkButton
 
-	call setOldHandler
-	 
+		mov ah, 01h
+		int 21h
+		mov lastButton, al
+
+
+		checkButton:
+		cmp lastButton, 's'
+		je setNewHandle
+		cmp lastButton, 'e'
+		je setOldHandle
+		cmp lastButton, 'x'
+		je exit
+
+		jmp while1
+
+
+		setNewHandle:
+			cmp intStatus, 1
+			je while1
+
+			call setNewHandler
+			mov intStatus, 1
+			jmp while1
+
+
+		setOldHandle:
+			cmp intStatus, 0
+			je while1
+
+			call setOldHandler
+			mov intStatus, 0
+			jmp while1
+		
+
+		endWhile1:
+	jmp while1
+
+	exit:
 	mov ah, 4ch
 	int 21h
 end main
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ;getArgument proc
