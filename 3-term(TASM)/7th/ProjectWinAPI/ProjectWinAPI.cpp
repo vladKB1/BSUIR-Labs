@@ -7,8 +7,13 @@
 
 #define MAX_LOADSTRING 100
 
-//TODO add some defines
 #define CLEAR_BUTTON 1
+#define RED 2
+#define GREEN 3
+#define BLUE 4
+#define YELLOW 5
+#define BLACK 6
+#define WHITE 7
 
 using namespace std;
 
@@ -17,14 +22,16 @@ HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
-
-//TODO add variables
 struct Obj {
     POINT fi;
-    POINT se;   
+    POINT se; 
+    int color;
+    int width;
 };
 
 vector<Obj> objects;
+int penColor = RGB(0, 0, 0);
+int penWidth = 3;
 
 
 
@@ -33,7 +40,8 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-//TODO add description of functions 
+
+
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -122,10 +130,25 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    }
 
    HMENU menu = GetMenu(hWnd);
-
    AppendMenu(menu, MF_ENABLED, CLEAR_BUTTON, L"Clear");
    
+   HMENU menuWidth = CreatePopupMenu();
+   AppendMenu(menuWidth, MF_ENABLED, 11, L"1");
+   AppendMenu(menuWidth, MF_ENABLED, 12, L"2");
+   AppendMenu(menuWidth, MF_ENABLED, 13, L"3");
+   AppendMenu(menuWidth, MF_ENABLED, 14, L"4");
+   AppendMenu(menuWidth, MF_ENABLED, 15, L"5");
+   AppendMenu(menuWidth, MF_ENABLED, 16, L"6");   
+   AppendMenu(menu, MF_POPUP | MF_STRING, (UINT)menuWidth, L"Width");
 
+   HMENU menuColor = CreatePopupMenu();
+   AppendMenu(menuColor, MF_ENABLED, RED, L"Red");
+   AppendMenu(menuColor, MF_ENABLED, GREEN, L"Green");
+   AppendMenu(menuColor, MF_ENABLED, BLUE, L"Blue");
+   AppendMenu(menuColor, MF_ENABLED, YELLOW, L"Yellow");
+   AppendMenu(menuColor, MF_ENABLED, BLACK, L"Black");
+   AppendMenu(menuColor, MF_ENABLED, WHITE, L"White");
+   AppendMenu(menu, MF_POPUP | MF_STRING, (UINT)menuColor, L"Color"); 
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
@@ -146,7 +169,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static HDC hdc;
-    static HPEN Pen = CreatePen(PS_SOLID, 3, RGB(0, 0, 255));
+    static HPEN Pen = CreatePen(PS_SOLID, 3, RGB(0, 0, 0));
     static BOOL fDraw = FALSE;    
 
     switch (message)
@@ -155,10 +178,53 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             int wmId = LOWORD(wParam);          
 
             switch (wmId)
-            {   case CLEAR_BUTTON:
+            {
+                case CLEAR_BUTTON:
                     objects.clear();
                     InvalidateRect(hWnd, NULL, TRUE);
                     break;
+
+
+                case 11:
+                    penWidth = 1;
+                    break;
+                case 12:
+                    penWidth = 2;
+                    break;
+                case 13:
+                    penWidth = 3;
+                    break;
+                case 14:
+                    penWidth = 4;
+                    break;
+                case 15:
+                    penWidth = 5;
+                    break;
+                case 16:
+                    penWidth = 6;
+                    break;
+
+
+                case RED:
+                    penColor = RGB(255, 0, 0);
+                    break;
+                case GREEN:
+                    penColor = RGB(0, 255, 0);
+                    break;
+                case BLUE:
+                    penColor = RGB(0, 0, 255);
+                    break;
+                case YELLOW:
+                    penColor = RGB(255, 255, 0);
+                    break;
+                case BLACK:
+                    penColor = RGB(0, 0, 0);
+                    break;
+                case WHITE:
+                    penColor = RGB(255, 255, 255);
+                    break;
+
+
                 case IDM_ABOUT:
                     DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                     break;
@@ -175,20 +241,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             fDraw = TRUE;
             Obj line;
             line.fi = { LOWORD(lParam), HIWORD(lParam) };   
+            line.width = penWidth;
+            line.color = penColor;            
             objects.push_back(line);
             break;
         }      
 
         case WM_LBUTTONUP: {
             if (fDraw)
-            {
-                hdc = GetDC(hWnd);
+            {              
                 int last = objects.size() - 1;
                 objects[last].se = { LOWORD(lParam), HIWORD(lParam) };    
-
-                MoveToEx(hdc, objects[last].fi.x, objects[last].fi.y, NULL);
-                LineTo(hdc, LOWORD(lParam), HIWORD(lParam));
-                ReleaseDC(hWnd, hdc);
+                
+                InvalidateRect(hWnd, NULL, TRUE);               
             }
             fDraw = FALSE;
             break;
@@ -198,13 +263,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
 
-            for (int i = 0; i < objects.size(); i++) {                               
-                HGDIOBJ last = SelectObject(hdc, Pen);
+            for (int i = 0; i < objects.size(); i++) { 
+                HPEN pen = CreatePen(PS_SOLID, objects[i].width, objects[i].color);
+                HGDIOBJ last = SelectObject(hdc, pen);
                
                 MoveToEx(hdc, objects[i].fi.x, objects[i].fi.y, NULL);
                 LineTo(hdc, objects[i].se.x, objects[i].se.y);
 
-                SelectObject(hdc, last);                              
+                SelectObject(hdc, last);  
+                DeleteObject(pen);
             }
 
             EndPaint(hWnd, &ps);
@@ -241,6 +308,3 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return (INT_PTR)FALSE;
 }
-
-
-//TODO functions
