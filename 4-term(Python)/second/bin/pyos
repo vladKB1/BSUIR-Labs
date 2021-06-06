@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+import argparse
+from serializers import serializeFactory
+import os
+
+parser = argparse.ArgumentParser(description="Specify the formats and paths")
+
+# Required args
+parser.add_argument('--src', help="path to file where placed object which need to pyos", type=str)
+parser.add_argument('--to', help="destination to file where need to put converted object", type=str)
+parser.add_argument('--format', help="format of final object")
+parser.add_argument('--primary', help="format of original object")
+
+# Optional args
+parser.add_argument('--env', help="path to environment file", type=str)
+
+args = parser.parse_args()
+
+if args.env:
+    print('Env loaded')
+elif args.src and args.to and args.format and args.primary:
+
+    # Catches if path is incorrect
+    if not os.path.exists(args.src) or not os.path.exists(args.to):
+        print('\033[93m' + 'Specify to --to and --src correct values!' + '\033[0m')
+        exit(0)
+    try:
+        primary_serializer = serializeFactory.SerializeFactory.create_serializer(args.primary)
+        target_serializer = serializeFactory.SerializeFactory.create_serializer(args.format)
+
+        current_object = None
+
+        with open(args.src, 'r') as fp:
+            current_object = primary_serializer.load(fp)
+
+        with open(args.to, 'w') as fp:
+            target_serializer.dump(current_object, fp)
+
+        print("Serialize was completed. Check the %s source" % args.to )
+    except Exception as e:
+        print("Serialize was crashed. %s" % e)
+
+else:
+    print('Follow the next instructions:\n')
+    print('Environment pyos options ->')
+    print('Add the --env option where placed environment file\n')
+    print('Flags pyos options -> ')
+    print('Add the flags:')
+    print(' --src(destination to initial file, --lib ~/file.json)')
+    print(' --to(destination to target converted file, --to ~/target.toml)')
+    print(' --format(format of target converted file, --format TOML)')
+    print(' --primary(format of initial file, --format JSON)')
+
